@@ -68,8 +68,8 @@ Three commands produce every artifact, build the consolidated report,
 and open the live dashboard:
 
 ```powershell
-& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' scripts/run_all_cmapss_experiments.py
-& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' scripts/generate_final_report.py
+& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' -m scripts.run_all_cmapss_experiments
+& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' -m scripts.generate_final_report
 streamlit run apps/streamlit_dashboard.py
 ```
 
@@ -85,7 +85,7 @@ streamlit run apps/streamlit_dashboard.py
 ## 3. Run a Single Dataset
 
 ```powershell
-& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' scripts/run_full_cmapss_experiment.py --dataset FD001
+& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' -m scripts.run_full_cmapss_experiment --dataset FD001
 ```
 
 Replace `FD001` with `FD002`, `FD003`, or `FD004`.
@@ -97,7 +97,7 @@ Replace `FD001` with `FD002`, `FD003`, or `FD004`.
 For a quick sanity check on FD001 unit 1 only:
 
 ```powershell
-& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' scripts/run_cmapss_pipeline.py
+& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' -m scripts.run_cmapss_pipeline
 ```
 
 ---
@@ -182,8 +182,8 @@ To regenerate everything from scratch:
 ```powershell
 Remove-Item data\processed\cmapss_*_multiunit -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item reports\figures\*multiunit* -Force -ErrorAction SilentlyContinue
-& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' scripts/run_all_cmapss_experiments.py
-& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' scripts/generate_final_report.py
+& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' -m scripts.run_all_cmapss_experiments
+& 'C:\Users\HP\AppData\Local\Python\bin\python.exe' -m scripts.generate_final_report
 & 'C:\Users\HP\AppData\Local\Python\bin\python.exe' -m pytest tests -q
 streamlit run apps/streamlit_dashboard.py
 ```

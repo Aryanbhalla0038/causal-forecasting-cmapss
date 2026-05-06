@@ -49,11 +49,11 @@ Step "Installing project (editable)"
 if ($LASTEXITCODE -ne 0) { throw "pip install failed" }
 
 Step "Running FD001-FD004 experiments"
-& $Python scripts/run_all_cmapss_experiments.py
+& $Python -m scripts.run_all_cmapss_experiments
 if ($LASTEXITCODE -ne 0) { throw "experiments failed" }
 
 Step "Generating final report"
-& $Python scripts/generate_final_report.py
+& $Python -m scripts.generate_final_report
 if ($LASTEXITCODE -ne 0) { throw "report generation failed" }
 
 if (-not $SkipTests) {
