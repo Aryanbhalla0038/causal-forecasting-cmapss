@@ -1,0 +1,134 @@
+Metadata-Version: 2.4
+Name: causal-forecasting-scm
+Version: 0.1.0
+Summary: Causal discovery and counterfactual simulation for multivariate forecasting.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.26
+Requires-Dist: pandas>=2.1
+Requires-Dist: scipy>=1.12
+Requires-Dist: scikit-learn>=1.3
+Requires-Dist: statsmodels>=0.14
+Requires-Dist: networkx>=3.2
+Requires-Dist: causal-learn>=0.1.3
+Requires-Dist: plotly>=5.18
+Requires-Dist: pyvis>=0.3
+Requires-Dist: streamlit>=1.30
+Requires-Dist: flask>=3.0
+Requires-Dist: pytest>=7.4
+Provides-Extra: deep-learning
+Requires-Dist: torch>=2.1; extra == "deep-learning"
+Provides-Extra: experiment
+Requires-Dist: mlflow>=2.9; extra == "experiment"
+
+# Causal Discovery and Counterfactual Simulation in Multivariate Forecasting
+
+IIT Industrial Training Final Project - AIML
+
+This repository implements Architecture 2 in staged parts. The first stage
+contains the scientifically defensible data foundation:
+
+- NASA CMAPSS-style data ingestion
+- time-series quality checks
+- Augmented Dickey-Fuller stationarity testing
+- first-order differencing for non-stationary variables
+- standard scaling with reusable scaler metadata
+- lag embedding for time-series causal discovery
+
+Later stages will add PC/FCI causal discovery, DAG validation, bootstrap edge
+stability, causal forecasting, shock injection, counterfactual simulation, and
+the Streamlit visualization dashboard.
+
+## Project Layout
+
+```text
+src/causal_forecasting/
+  config.py              Project configuration dataclasses
+  data/
+    ingestion.py         Dataset loaders
+    preprocessing.py     Quality checks, stationarity, lag features
+  causal_discovery/
+    discovery.py         PC and FCI wrappers
+    graph_utils.py       Edge extraction and PC-vs-FCI comparison
+tests/
+  test_preprocessing.py  Unit tests for the data foundation
+```
+
+## Recommended Dataset
+
+Use the NASA CMAPSS turbofan degradation dataset. Put raw files under:
+
+```text
+data/raw/
+```
+
+For example:
+
+```text
+data/raw/train_FD001.txt
+```
+
+## Part 1 Example
+
+```python
+from pathlib import Path
+
+from causal_forecasting.data.ingestion import load_cmapss_train
+from causal_forecasting.data.preprocessing import (
+    create_lagged_features,
+    make_stationary,
+    normalize_dataframe,
+    run_stationarity_tests,
+    validate_time_series_frame,
+)
+
+df = load_cmapss_train(Path("data/raw/train_FD001.txt"))
+validate_time_series_frame(df)
+
+sensor_cols = [col for col in df.columns if col.startswith("s")]
+stationarity = run_stationarity_tests(df[sensor_cols])
+stationary_df, differenced = make_stationary(df[sensor_cols], stationarity)
+scaled_df, scaler = normalize_dataframe(stationary_df)
+lagged_df = create_lagged_features(scaled_df, max_lag=5)
+```
+
+## Part 2 Example
+
+```python
+from causal_forecasting.causal_discovery import (
+    compare_pc_fci,
+    compute_algorithm_agreement,
+    run_fci,
+    run_pc,
+)
+
+pc_result = run_pc(lagged_df)
+fci_result = run_fci(lagged_df)
+
+comparison = compare_pc_fci(pc_result.edges, fci_result.edges)
+agreement = compute_algorithm_agreement(
+    pc_result.graph_matrix,
+    fci_result.graph_matrix,
+)
+```
+
+Interpretation rules:
+
+- PC and FCI agree on direction: high-confidence causal claim
+- PC directed edge but FCI bidirected edge: suspected hidden confounding
+- PC-only or FCI-only directed edge: investigate with bootstrap stability
+
+## Scientific Reporting Notes
+
+Part 1 produces the artifacts needed for the report's first methodological
+tables:
+
+- data quality summary
+- ADF statistic and p-value per variable
+- list of differenced variables
+- lag embedding configuration
+
+Do not run causal discovery on raw non-stationary time series.
+
+Part 2 produces the PC-vs-FCI comparison table and Cohen's Kappa agreement
+metric required for the dual-algorithm strategy.
