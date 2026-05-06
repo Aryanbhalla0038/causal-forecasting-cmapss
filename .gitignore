@@ -19,7 +19,13 @@ reports/figures/*
 mlruns/
 outputs/
 
+# Track the public NASA CMAPSS dataset so the repo is reproducible end-to-end.
 !data/raw/.gitkeep
+!data/raw/train_FD00*.txt
+!data/raw/test_FD00*.txt
+!data/raw/RUL_FD00*.txt
+!data/raw/readme.txt
+!data/raw/Damage Propagation Modeling.pdf
 !data/processed/.gitkeep
 !reports/figures/.gitkeep
 
