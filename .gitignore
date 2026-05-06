@@ -4,6 +4,11 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 
+# Build artifacts
+*.egg-info/
+build/
+dist/
+
 .venv/
 venv/
 env/
